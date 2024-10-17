@@ -1,22 +1,36 @@
 "use client";
 import Image from "next/image";
-import { FieldPath, FormProvider, useForm, useWatch } from "react-hook-form";
+import {
+  Controller,
+  FieldPath,
+  FormProvider,
+  useForm,
+  useWatch,
+} from "react-hook-form";
 import { ErrorMessage } from "@hookform/error-message";
 import { RenderInput } from "@/app/input/render-field";
 import { Iform } from "@/app/types/IForm";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { Input } from "antd";
+import { setCookie } from "cookies-next";
 export default function LoginPage() {
   const methods = useForm<Iform.Login>({});
-  const [token, setToken] = useState("");
+  const [token, setToken] = useState<any>();
+  useEffect(() => {
+    if (token) {
+      setCookie("arc_token", token.access_token);
+    }
+  }, [token]);
+  const [password, setPassword] = useState("");
   const router = useRouter();
   const onsubmit = async (value: Iform.Login) => {
     try {
       const res = await axios.post(
         "http://localhost:3003/auth/login",
-        { ...value },
+        { ...value, password: password },
         {
           headers: {
             "Content-Type": "application/json",
@@ -24,7 +38,13 @@ export default function LoginPage() {
         }
       );
       setToken(res.data);
-      toast.success("login successfully");
+      if (res.data === "unauthenticated") {
+        toast.error(
+          "email này chưa được đăng ký. Vui lòng đăng ký để đăng nhập vào"
+        );
+      } else {
+        toast.success("login successfully");
+      }
     } catch {
       toast.error("login fail");
     }
@@ -79,18 +99,22 @@ export default function LoginPage() {
                     Nhập mật khẩu
                     <span className="text-red-500 pl-1">*</span>
                   </label>
-                  <RenderInput
+                  <Controller
                     name="password"
-                    type="text"
-                    required
-                    placeholder="Nhập mật khẩu"
-                    className="w-full text-black"
-                  />
-                  <ErrorMessage
-                    errors={methods.formState.errors}
-                    name="password"
-                    render={({ message }) => (
-                      <p className="text-red-500 text-xs">{message}</p>
+                    control={methods.control}
+                    render={({ field }) => (
+                      <Input.Password
+                        {...field}
+                        placeholder="Nhập mật khẩu"
+                        className="border-none bg-[#F5F5FA] h-[48px]"
+                        onChange={(e) => setPassword(e.target.value)}
+                        value={password}
+                        defaultValue={""}
+                        // visibilityToggle={{
+                        //   visible: true,
+                        //   onVisibleChange: undefined,
+                        // }}
+                      />
                     )}
                   />
                 </div>

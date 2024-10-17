@@ -1,13 +1,22 @@
 "use client";
 import Image from "next/image";
-import { FieldPath, FormProvider, useForm, useWatch } from "react-hook-form";
+import {
+  Controller,
+  FieldPath,
+  FormProvider,
+  useForm,
+  useWatch,
+} from "react-hook-form";
 import { ErrorMessage } from "@hookform/error-message";
 import { RenderInput } from "@/app/input/render-field";
 import { Iform } from "@/app/types/IForm";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { Input } from "antd";
+import { useState } from "react";
 export default function SigninPage() {
   const methods = useForm<Iform.signin>({});
+  const [password, setPassword] = useState("");
   const router = useRouter();
   const onsubmit = async () => {
     console.log("result");
@@ -100,18 +109,22 @@ export default function SigninPage() {
                     Nhập mật khẩu
                     <span className="text-red-500 pl-1">*</span>
                   </label>
-                  <RenderInput
+                  <Controller
                     name="password"
-                    type="text"
-                    placeholder="Nhập mật khẩu"
-                    className="w-full text-black"
-                    required
-                  />
-                  <ErrorMessage
-                    errors={methods.formState.errors}
-                    name="password"
-                    render={({ message }) => (
-                      <p className="text-red-500 text-xs">{message}</p>
+                    control={methods.control}
+                    render={({ field }) => (
+                      <Input.Password
+                        {...field}
+                        placeholder="Nhập mật khẩu"
+                        className="border-none bg-[#F5F5FA] h-[48px]"
+                        onChange={(e) => setPassword(e.target.value)}
+                        value={password}
+                        defaultValue={""}
+                        // visibilityToggle={{
+                        //   visible: true,
+                        //   onVisibleChange: undefined,
+                        // }}
+                      />
                     )}
                   />
                 </div>
