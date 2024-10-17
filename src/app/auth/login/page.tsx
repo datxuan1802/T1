@@ -38,15 +38,16 @@ export default function LoginPage() {
         }
       );
       setToken(res.data);
-      if (res.data === "unauthenticated") {
+
+      toast.success("login successfully");
+    } catch (error: any) {
+      if (error.response.status === 404) {
         toast.error(
-          "email này chưa được đăng ký. Vui lòng đăng ký để đăng nhập vào"
+          "email này chưa đăng ký hoặc sai thông tin vui lòng nhập ại hoặc đi đến tạo tài khoản để sử dụng"
         );
       } else {
-        toast.success("login successfully");
+        toast.error("login fail");
       }
-    } catch {
-      toast.error("login fail");
     }
   };
   return (
