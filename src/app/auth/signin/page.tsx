@@ -13,13 +13,19 @@ import { Iform } from "@/app/types/IForm";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { Input } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { setCookie } from "cookies-next";
 export default function SigninPage() {
   const methods = useForm<Iform.signin>({});
   const [password, setPassword] = useState("");
   const router = useRouter();
-
+  const [token, setToken] = useState<any>();
+  useEffect(() => {
+    if (token) {
+      setCookie("arc_token", token.arc_token);
+    }
+  }, [token]);
   const onsubmit = async (value: Iform.signin) => {
     try {
       const res = await axios.post("http://localhost:3003/auth/signin", {
@@ -27,6 +33,8 @@ export default function SigninPage() {
         password: password,
         role: "owner",
       });
+      setToken(res.data);
+      toast.success("sign in successfully");
     } catch (error: any) {
       if (error.response.status === 409) {
         toast.error("email đã tồn tại");
