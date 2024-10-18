@@ -24,8 +24,9 @@ export default function SigninPage() {
   useEffect(() => {
     if (token) {
       setCookie("arc_token", token.arc_token);
+      router.push("/home");
     }
-  }, [token]);
+  }, [token, router]);
   const onsubmit = async (value: Iform.signin) => {
     try {
       const res = await axios.post("http://localhost:3003/auth/signin", {

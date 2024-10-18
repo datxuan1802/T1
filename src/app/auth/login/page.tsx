@@ -19,13 +19,15 @@ import { setCookie } from "cookies-next";
 export default function LoginPage() {
   const methods = useForm<Iform.Login>({});
   const [token, setToken] = useState<any>();
+  const [password, setPassword] = useState("");
+  const router = useRouter();
   useEffect(() => {
     if (token) {
       setCookie("arc_token", token.access_token);
+      router.push("/home");
     }
-  }, [token]);
-  const [password, setPassword] = useState("");
-  const router = useRouter();
+  }, [token, router]);
+
   const onsubmit = async (value: Iform.Login) => {
     try {
       const res = await axios.post(
